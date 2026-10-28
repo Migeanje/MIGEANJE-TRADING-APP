@@ -86,6 +86,35 @@ def test_too_small_budget_yields_zero_quantity_with_warning():
     assert any("cannot buy" in w for w in plan.warnings)
 
 
+def test_zero_quantity_warning_names_the_limit_that_blocks_it():
+    # Risk allows 2 shares (10 / 5) but the 200 USD position cap cannot buy one at 300.
+    plan = size_position(make_rules(), symbol="ABC", market="stocks", entry=300, stop=295)
+
+    assert plan.quantity == 0
+    assert plan.capped_by == "max_position"
+    assert any("max position of 200.00 USD cannot buy" in w for w in plan.warnings)
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        (dict(entry=float("nan"), stop=45), "entry"),
+        (dict(entry=float("inf"), stop=45), "entry"),
+        (dict(entry=50, stop=float("nan")), "stop"),
+        (dict(entry=50, stop=45, target=float("inf")), "target"),
+        (dict(entry=50, stop=45, decimals=30), "decimals"),
+    ],
+)
+def test_non_finite_prices_and_absurd_decimals_are_rejected(kwargs, message):
+    with pytest.raises(SizingError, match=message):
+        size_position(make_rules(), symbol="ABC", market="stocks", **kwargs)
+
+
+def test_empty_symbol_is_rejected():
+    with pytest.raises(SizingError, match="symbol"):
+        size_position(make_rules(), symbol="  ", market="stocks", entry=50, stop=45)
+
+
 @pytest.mark.parametrize(
     ("kwargs", "message"),
     [

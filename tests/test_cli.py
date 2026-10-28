@@ -40,6 +40,17 @@ def test_size_rejects_invalid_prices_with_exit_code_1(capsys):
     assert "stop" in err
 
 
+def test_size_rejects_nan_without_a_traceback(capsys):
+    code, out, err = run(
+        capsys, "size", "--rules", str(EXAMPLE_RULES),
+        "--symbol", "ABC", "--market", "stocks", "--entry", "nan", "--stop", "45",
+    )
+
+    assert code == 1
+    assert out == ""
+    assert err.startswith("error: entry")
+
+
 def test_missing_rules_file_explains_how_to_create_it(capsys, tmp_path):
     code, out, err = run(
         capsys, "size", "--rules", str(tmp_path / "rules.toml"),

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from decimal import ROUND_DOWN, Decimal
 
 from trading_app.risk.rules import TradingRules
 
 MARKETS = ("stocks", "crypto")
+MAX_DECIMALS = 12
 
 
 class SizingError(ValueError):
@@ -47,23 +49,31 @@ def size_position(
     max_position_pct cap allows, rounded down to `decimals` (0 = whole shares).
     """
     symbol = symbol.strip().upper()
+    if not symbol:
+        raise SizingError("symbol must not be empty")
     _check_symbol(rules, symbol, market)
     _check_prices(entry, stop, target)
-    if decimals < 0:
-        raise SizingError(f"decimals must be >= 0 (got {decimals})")
+    if not 0 <= decimals <= MAX_DECIMALS:
+        raise SizingError(f"decimals must be between 0 and {MAX_DECIMALS} (got {decimals})")
 
     unit_risk = entry - stop
     risk_budget = rules.capital * rules.risk_per_trade_pct / 100
+    position_cap = rules.capital * rules.max_position_pct / 100
     by_risk = risk_budget / unit_risk
-    by_cap = rules.capital * rules.max_position_pct / 100 / entry
+    by_cap = position_cap / entry
     capped_by = "risk" if by_risk <= by_cap else "max_position"
     quantity = _round_down(min(by_risk, by_cap), decimals)
 
     warnings = []
     if quantity == 0:
+        limit = (
+            f"A risk budget of {risk_budget:.2f}"
+            if capped_by == "risk"
+            else f"A max position of {position_cap:.2f}"
+        )
         warnings.append(
-            f"A risk budget of {risk_budget:.2f} {rules.currency} cannot buy one unit "
-            f"at {entry:g} with this stop and {decimals} decimals; skip this candidate"
+            f"{limit} {rules.currency} cannot buy one unit at {entry:g} "
+            f"with {decimals} decimals; skip this candidate"
         )
 
     reward_risk = None
@@ -106,6 +116,9 @@ def _check_symbol(rules: TradingRules, symbol: str, market: str) -> None:
 
 
 def _check_prices(entry: float, stop: float, target: float | None) -> None:
+    for name, value in (("entry", entry), ("stop", stop), ("target", target)):
+        if value is not None and not math.isfinite(value):
+            raise SizingError(f"{name} must be a finite number (got {value})")
     if entry <= 0:
         raise SizingError(f"entry must be greater than 0 (got {entry:g})")
     if stop <= 0:
