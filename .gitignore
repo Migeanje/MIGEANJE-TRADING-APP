@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Personal data: this repository is public.
+# Your real rules (capital, risk) and generated reports never leave your machine.
+config/rules.toml
+reports/*
+!reports/.gitkeep
+.env
+.env.*
+
+# Tool scratch
+.playwright-mcp/
