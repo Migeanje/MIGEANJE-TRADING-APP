@@ -18,6 +18,14 @@ def test_script_never_bypasses_permissions():
     assert "dangerously-skip-permissions" not in text
 
 
+def test_unattended_run_cannot_read_files():
+    # The run fetches untrusted web pages; with file reads allowed too, an injected
+    # instruction could read local files and leak them through a fetched URL.
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert not re.search(r'"Read(\([^)]*\))?"', text)
+
+
 def test_shell_access_is_limited_to_the_risk_cli():
     text = SCRIPT.read_text(encoding="utf-8")
 
@@ -42,3 +50,4 @@ def test_dry_run_prints_the_headless_command():
     assert "Edit(reports/**)" in out
     assert "mcp__coingecko__*" in out
     assert "mcp__tradingview__*" in out
+    assert "Read" not in out.split()

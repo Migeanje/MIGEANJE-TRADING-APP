@@ -70,15 +70,17 @@ Inside `claude` in this folder:
 
 The skill only runs when you invoke it. It validates your rules, launches the agents in
 parallel, sizes every idea with `trading-app size` (the model never picks the quantity), and
-writes `reports/<date>.md` with the candidates, the events to avoid in the window, the rejected
+writes `reports/<date>-<time>.md` with the candidates, the events to avoid in the window, the rejected
 ideas and the data gaps. Reports are git-ignored. It never places orders.
 
 ## Automate it (Windows)
 
 `scripts/run-daily.ps1` runs `claude -p "/trading-research"` without supervision and logs to
 `reports/logs/`. It uses the `dontAsk` permission mode with a short allow list: the run can
-search, read, write inside `reports/` and call `uv run trading-app`; everything else is denied.
-A test fails if the script ever bypasses permissions.
+search the web, write inside `reports/` and call `uv run trading-app`; everything else is denied.
+It cannot read local files: it fetches untrusted web pages, and an injected instruction must not
+be able to read your files and leak them through a URL. Tests fail if the script ever bypasses
+permissions or allows file reads.
 
 ```powershell
 .\scripts\run-daily.ps1 -DryRun    # print the exact command without running it

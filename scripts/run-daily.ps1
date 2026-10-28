@@ -6,7 +6,9 @@
     Meant for Windows Task Scheduler. Runs `claude -p "/trading-research"` from the repository
     root in dontAsk permission mode: every tool not listed in $AllowedTools is denied, so an
     unattended run can research and write its report, but cannot edit code, run other
-    commands or place orders. Logs go to reports/logs (git-ignored).
+    commands or place orders. File reads are not allowed either: the run fetches untrusted
+    web pages, and an injected instruction must not be able to read local files and leak
+    them. Logs go to reports/logs (git-ignored).
 
 .PARAMETER DryRun
     Print the command instead of running it.
@@ -19,7 +21,6 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 $AllowedTools = @(
-    "Read",
     "Agent",
     "WebSearch",
     "WebFetch",
