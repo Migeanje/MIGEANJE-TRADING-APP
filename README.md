@@ -58,6 +58,21 @@ commands or place orders.
 | `stock-scout` | Long stock setups with entry, stop and target that fit your rules |
 | `crypto-scout` | Crypto market read and long setups with entry, stop and target |
 
+## Run the research
+
+Inside `claude` in this folder:
+
+```text
+/trading-research
+/trading-research only crypto
+/trading-research tech stocks, en español
+```
+
+The skill only runs when you invoke it. It validates your rules, launches the agents in
+parallel, sizes every idea with `trading-app size` (the model never picks the quantity), and
+writes `reports/<date>.md` with the candidates, the events to avoid in the window, the rejected
+ideas and the data gaps. Reports are git-ignored. It never places orders.
+
 ## Rules reference
 
 | Section | Field | Meaning |
