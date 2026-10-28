@@ -29,6 +29,35 @@ uv run pytest
 
 `config/rules.toml` is git-ignored: this repository is public, and your capital and limits stay on your machine.
 
+### Data sources (MCP servers)
+
+`.mcp.json` declares two remote, read-only MCP servers for this project:
+
+| Server | What it provides | Account |
+|---|---|---|
+| `coingecko` | Crypto prices, market cap, volume, trending coins | None (keyless public endpoint, shared rate limits) |
+| `tradingview` | Economic and earnings calendars, screener, technical indicators, fundamentals, news | TradingView **Essential** plan or higher (public beta) |
+
+1. Run `claude` in this folder and approve both servers when asked.
+2. Run `/mcp`, select `tradingview` and log in with your TradingView account.
+
+Without TradingView the agents fall back to official sources (Federal Reserve, BEA, Census, SEC)
+and web search, with less market data.
+
+## Research agents
+
+Five read-only agents live in `.claude/agents/`. They can only search and read; a test
+(`tests/test_agent_config.py`) fails if any of them gets a tool that can change files, run
+commands or place orders.
+
+| Agent | Researches |
+|---|---|
+| `macro-calendar` | Official US economic releases in the window (CPI, PPI, jobs, GDP, PCE, FOMC) |
+| `fed-watcher` | Federal Reserve stance, decisions, minutes and speeches |
+| `earnings-watcher` | Earnings, dividends and splits in the window; latest results |
+| `stock-scout` | Long stock setups with entry, stop and target that fit your rules |
+| `crypto-scout` | Crypto market read and long setups with entry, stop and target |
+
 ## Rules reference
 
 | Section | Field | Meaning |

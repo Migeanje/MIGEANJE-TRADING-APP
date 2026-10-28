@@ -20,7 +20,7 @@ Constraint: the GitHub repo is PUBLIC — personal rules (capital), reports and 
 |----|-------|-------|-------|--------|----------|
 | T1 | S1 | Project scaffold (`pyproject.toml`, `.gitignore`, README) + rules example + rules loader/validator with tests | inline (no writer trigger: single unit, <100 lines of logic) | done | `56bb160`; RED: ModuleNotFoundError → GREEN 17 passed; RDD assess vs empty tree: medium, not due (`under_budget`) |
 | T2 | S3, S6 | Position sizing domain + `trading-app size` CLI + tests | inline | done | RED: ModuleNotFoundError → GREEN 37 passed; CLI smoke `size --symbol btc --market crypto --entry 60000 --stop 54000 --target 75000 --decimals 6` → qty 0.001666, risk 9.996 USD, exit 0 |
-| T3 | S2, S5 | 5 read-only research agents in `.claude/agents/` + project `.mcp.json` (CoinGecko, TradingView) | inline | pending | |
+| T3 | S2, S5 | 5 read-only research agents in `.claude/agents/` + project `.mcp.json` (CoinGecko, TradingView) | inline | done | RED: `test_agent_config.py` 2 failed (no agents, no `.mcp.json`) → GREEN 44 passed; `claude mcp list` shows coingecko + tradingview "Pending approval" (parsed). BLS blocks automated fetches (HTTP 403) → agent falls back to WebSearch/TradingView |
 | T4 | S3 | `/trading-research` orchestrator skill + report format (`reports/`, git-ignored) | inline | pending | |
 | T5 | S7 | Daily headless run script (`claude -p`) + Windows Task Scheduler instructions | inline | pending | |
 | T6 | S4 | Alpaca paper-trading MCP (local, `ALPACA_PAPER_TRADE=true`) + per-order human approval | inline | blocked: needs the user's Alpaca paper API keys | |
