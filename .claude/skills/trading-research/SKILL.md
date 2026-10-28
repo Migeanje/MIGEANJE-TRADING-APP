@@ -3,7 +3,7 @@ name: trading-research
 description: Run the trading research workflow. Reads the user's rules, fans out to the read-only research agents, sizes every candidate with the risk code, and writes one report to reports/. Use when the user asks for the trading research, the daily report, or trade candidates.
 argument-hint: "[optional focus, e.g. 'only crypto', 'tech stocks', 'en español']"
 disable-model-invocation: true
-allowed-tools: Agent, Edit(reports/**), Bash(uv run trading-app *)
+allowed-tools: Agent, Edit(reports/*.md), Bash(uv run trading-app *)
 ---
 
 # Trading research
@@ -62,8 +62,9 @@ earnings), using the agents' tables. Carry every data gap the agents reported in
 
 ## Step 5 — Write the report
 
-Write a new file `reports/<YYYY-MM-DD>-<HHMM>.md` (local time), so a run never needs to read or
-overwrite an earlier report. Write it in English unless the focus asks for another language.
+Write a new file `reports/<YYYY-MM-DD>-<HHMM>.md` (local time), directly inside `reports/`, so a
+run never needs to read or overwrite an earlier report. Unattended runs can only create
+Markdown files there. Write it in English unless the focus asks for another language.
 Use this structure:
 
 ```markdown

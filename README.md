@@ -76,11 +76,18 @@ ideas and the data gaps. Reports are git-ignored. It never places orders.
 ## Automate it (Windows)
 
 `scripts/run-daily.ps1` runs `claude -p "/trading-research"` without supervision and logs to
-`reports/logs/`. It uses the `dontAsk` permission mode with a short allow list: the run can
-search the web, write inside `reports/` and call `uv run trading-app`; everything else is denied.
-It cannot read local files: it fetches untrusted web pages, and an injected instruction must not
-be able to read your files and leak them through a URL. Tests fail if the script ever bypasses
-permissions or allows file reads.
+`reports/logs/`. It uses the `dontAsk` permission mode, so every tool call outside a short allow
+list is denied. The run reads untrusted web pages, so the guard assumes an injected instruction
+may try to leak data or run code, and closes the exits:
+
+- **Web fetches** only reach official data domains (Federal Reserve, BEA, Census, BLS, SEC,
+  CoinGecko, TradingView). Web search and the two data MCP servers stay available.
+- **Writes** can only create Markdown files directly inside `reports/`: no code, no config.
+- **Commands**: only `uv run trading-app`.
+
+Claude Code always allows read-only shell commands such as `cat` inside the working directory,
+so the run *can* read files in this repository. **Keep secrets (API keys) out of this folder.**
+Tests fail if the script bypasses permissions or widens any of these rules.
 
 ```powershell
 .\scripts\run-daily.ps1 -DryRun    # print the exact command without running it

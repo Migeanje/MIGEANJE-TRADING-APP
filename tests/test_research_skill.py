@@ -15,6 +15,13 @@ def test_skill_only_runs_when_invoked_explicitly():
     assert fields["disable-model-invocation"] == "true"
 
 
+def test_skill_preapproves_only_reports_and_the_risk_cli():
+    fields = frontmatter(SKILL)
+
+    tools = {t.strip() for t in fields["allowed-tools"].split(",")}
+    assert tools == {"Agent", "Edit(reports/*.md)", "Bash(uv run trading-app *)"}
+
+
 def test_skill_delegates_to_every_research_agent():
     body = SKILL.read_text(encoding="utf-8")
 
