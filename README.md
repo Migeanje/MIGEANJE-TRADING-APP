@@ -45,3 +45,23 @@ uv run pytest
 | `markets` | `allowed_symbols`, `blocked_symbols` | Optional allow/deny lists (empty allow list = any) |
 
 Invalid rules are rejected with the name of the offending field.
+
+## Position sizing
+
+"How much to buy" is computed by code, never by the model. For a long trade:
+
+- **Risk budget** = `capital × risk_per_trade_pct / 100`, so a stop-out never loses more than that.
+- **Quantity** = the smaller of `risk budget / (entry − stop)` and `capital × max_position_pct / 100 / entry`,
+  rounded **down** (whole shares by default, `--decimals` for crypto).
+- With a `--target`, the reward/risk ratio is checked against `min_reward_risk`.
+
+```bash
+uv run trading-app rules    # validate config/rules.toml and print it as JSON
+uv run trading-app size --symbol AAPL --market stocks --entry 190 --stop 182 --target 210
+uv run trading-app size --symbol BTC --market crypto --entry 60000 --stop 54000 --decimals 6
+```
+
+The plan is printed as JSON (`quantity`, `position_value`, `risk_amount`, `risk_pct`, `reward_risk`,
+`meets_min_reward_risk`, `capped_by`, `warnings`). A trade that breaks your rules (blocked symbol,
+disabled market, stop above entry, etc.) exits with code 1 and the reason on stderr.
+Only long positions are supported.

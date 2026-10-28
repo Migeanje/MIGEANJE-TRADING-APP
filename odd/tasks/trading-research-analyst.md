@@ -18,8 +18,8 @@ Constraint: the GitHub repo is PUBLIC — personal rules (capital), reports and 
 
 | ID | Specs | Scope | Route | Status | Evidence |
 |----|-------|-------|-------|--------|----------|
-| T1 | S1 | Project scaffold (`pyproject.toml`, `.gitignore`, README) + rules example + rules loader/validator with tests | inline (no writer trigger: single unit, <100 lines of logic) | pending | |
-| T2 | S3, S6 | Position sizing domain + `trading-app size` CLI + tests | inline | pending | |
+| T1 | S1 | Project scaffold (`pyproject.toml`, `.gitignore`, README) + rules example + rules loader/validator with tests | inline (no writer trigger: single unit, <100 lines of logic) | done | `56bb160`; RED: ModuleNotFoundError → GREEN 17 passed; RDD assess vs empty tree: medium, not due (`under_budget`) |
+| T2 | S3, S6 | Position sizing domain + `trading-app size` CLI + tests | inline | done | RED: ModuleNotFoundError → GREEN 37 passed; CLI smoke `size --symbol btc --market crypto --entry 60000 --stop 54000 --target 75000 --decimals 6` → qty 0.001666, risk 9.996 USD, exit 0 |
 | T3 | S2, S5 | 5 read-only research agents in `.claude/agents/` + project `.mcp.json` (CoinGecko, TradingView) | inline | pending | |
 | T4 | S3 | `/trading-research` orchestrator skill + report format (`reports/`, git-ignored) | inline | pending | |
 | T5 | S7 | Daily headless run script (`claude -p`) + Windows Task Scheduler instructions | inline | pending | |
@@ -34,4 +34,5 @@ Constraint: the GitHub repo is PUBLIC — personal rules (capital), reports and 
 - **L5 (2026-10-28, research evidence):** XTB discontinued its API on 2025-03-14 (help center: "API access is no longer available. The service was discontinued on March 14, 2025.") → XTB cannot be automated; execution there stays manual. Data-only MCPs: CoinGecko (official, keyless remote `https://mcp.api.coingecko.com/mcp`), Etherscan (official, keyless remote), TradingView (official beta, `https://mcp.tradingview.com/mcp`, OAuth, needs Essential plan or higher, no order placement), Massive (ex Polygon.io). Order-capable: Alpaca (official, local only, paper by default; Peru eligibility unverified), Binance (official, isolated sub-account). ccxt-mcp rejected (community, plaintext keys, no sandbox, "use all capital" default).
 - **L6 (2026-10-28, decision):** Rules file format is TOML (`tomllib` is in the Python standard library → zero runtime dependencies). Python 3.13 + uv available locally. Repo confirmed public (GitHub API 200) → `config/rules.toml` and `reports/` are git-ignored.
 - **L7 (2026-10-28, tracking):** Engram mirror `odd/trading-research-analyst/tasks` is PENDING — `mem_save` refused project `migeanje-trading-app` as "not backed by known context" (new repo). Resynchronize once Engram registers the project.
-- **Next step:** T1.
+- **L8 (2026-10-28, user, verbatim, out of feature scope):** "tambien quiero onstalar npx skills add https://github.com/vercel-labs/skills --skill find-skills" → installed manually into `~/.claude/skills/find-skills` after review (no repo change).
+- **Next step:** T3.
