@@ -73,6 +73,29 @@ parallel, sizes every idea with `trading-app size` (the model never picks the qu
 writes `reports/<date>.md` with the candidates, the events to avoid in the window, the rejected
 ideas and the data gaps. Reports are git-ignored. It never places orders.
 
+## Automate it (Windows)
+
+`scripts/run-daily.ps1` runs `claude -p "/trading-research"` without supervision and logs to
+`reports/logs/`. It uses the `dontAsk` permission mode with a short allow list: the run can
+search, read, write inside `reports/` and call `uv run trading-app`; everything else is denied.
+A test fails if the script ever bypasses permissions.
+
+```powershell
+.\scripts\run-daily.ps1 -DryRun    # print the exact command without running it
+.\scripts\run-daily.ps1            # run it now
+```
+
+To run it every weekday at 7:30, from the repository root in PowerShell:
+
+```powershell
+$action  = New-ScheduledTaskAction -Execute "powershell.exe" `
+           -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$((Resolve-Path scripts\run-daily.ps1).Path)`""
+$trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday,Tuesday,Wednesday,Thursday,Friday -At 7:30am
+Register-ScheduledTask -TaskName "MIGEANJE Trading Research" -Action $action -Trigger $trigger
+```
+
+Every run uses your Claude plan. Remove it with `Unregister-ScheduledTask -TaskName "MIGEANJE Trading Research"`.
+
 ## Rules reference
 
 | Section | Field | Meaning |

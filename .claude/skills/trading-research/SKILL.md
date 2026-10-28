@@ -3,7 +3,7 @@ name: trading-research
 description: Run the trading research workflow. Reads the user's rules, fans out to the read-only research agents, sizes every candidate with the risk code, and writes one report to reports/. Use when the user asks for the trading research, the daily report, or trade candidates.
 argument-hint: "[optional focus, e.g. 'only crypto', 'tech stocks', 'en español']"
 disable-model-invocation: true
-allowed-tools: Read, Write, Agent, Bash(uv run trading-app *)
+allowed-tools: Read, Agent, Edit(reports/**), Bash(uv run trading-app *)
 ---
 
 # Trading research
